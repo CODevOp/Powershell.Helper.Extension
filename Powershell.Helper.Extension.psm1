@@ -344,11 +344,11 @@ function Build-Path{
             }
             Write-Verbose $testPath
             If(!(test-path $testPath)){
-                New-Item $testPath -ItemType directory
+                $createfolder = New-Item $testPath -ItemType directory
             }
         }     
     }
-    [string]$Path
+    return [string]$Path
 }
         
 New-Alias -Name Format-NumberedList -Value Format-OrderedList
