@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.2'
+ModuleVersion = '1.3'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -27,7 +27,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) 2016 Bret Knoll. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Provides helper functions to assist in the use of powershell'
+Description = 'Provides helper functions to assist in the use of powershell. This module is open source on github (https://github.com/CODevOp/Powershell.Helper.Extension).'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
