@@ -330,7 +330,7 @@ end{
 
 #>
 
-function Build-Path{
+function Add-Path{
     param([string]$Path)
     [string]$testPath = ""
     if(!(test-path $Path) ){
@@ -351,4 +351,5 @@ function Build-Path{
     return [string]$Path
 }
         
-New-Alias -Name Format-NumberedList -Value Format-OrderedList
+New-Alias -Name Format-NumberedList -Value Format-OrderedList -Description "Allias for Format-OrderedList."
+New-Alias -Name Build-Path -Value Add-Path -Description "Alias for Add-Path, to prevent a breaking change. "
