@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.3'
+ModuleVersion = '1.4'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -27,7 +27,14 @@ CompanyName = 'Unknown'
 Copyright = '(c) 2016 Bret Knoll. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Provides helper functions to assist in the use of powershell. This module is open source on github (https://github.com/CODevOp/Powershell.Helper.Extension).'
+Description = '# Powershell.Helper.Extension
+Provides helper functions to assist in the use of powershell
+
+This powershell module has been distributed on the powershell gallery at 
+https://www.powershellgallery.com/packages/Powershell.Helper.Extension. 
+The purpose for adding this to GitHub is to collaborate with other developers 
+and to increase proficiency in Git repositories and continue to build powershell skills.
+'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -66,7 +73,7 @@ FormatsToProcess = @()
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = 'Format-OrderedList', 'Build-Path'
+FunctionsToExport = 'Format-OrderedList', 'Add-Path'
 
 # Cmdlets to export from this module
 CmdletsToExport = @()
@@ -75,7 +82,7 @@ CmdletsToExport = @()
 VariablesToExport = @()
 
 # Aliases to export from this module
-AliasesToExport = 'Format-NumberedList'
+AliasesToExport = 'Format-NumberedList', 'Build-Path'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
@@ -92,19 +99,19 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'Helper','utility','Format-NumberedList','Format'
+        Tags = 'Helper','utility','Format-NumberedList','Format', 'Path', 'Add-Path'
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/CODevOp/Powershell.Helper.Extension/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/CODevOp/Powershell.Helper.Extension'
 
         # A URL to an icon representing this module.
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'Changed the function Build-Path to Add-Path to prevent unapproved verb warning. Pester was updated to test for both Add-Path and Build-Path alias. Updated Tags, LicenseURI and ProjectURI. '
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
