@@ -40,6 +40,37 @@ function Format-Item{
     
 
 }
+############### Place external functions here alphabetically
+<#
+.DESCRIPTION 
+    Creates each level of a path. Requires elevated permissions to create a path. Currently, does not check if
+    adequate permissions exist to create a path.
+.EXAMPLE 1
+    Build-Path -Path "c:\temp\ouptut\Time0930"
+    Each portion of the path is checked, if it does not exist it is created.
+
+#>
+
+function Add-Path{
+    param([string]$Path)
+    [string]$testPath = ""
+    if(!(test-path $Path) ){
+        
+        $Path.Split("\") | foreach{
+            if($_ -like "*:" ){
+                $testPath = $_
+            }
+            if($_ -notlike "*:" ){
+                $testPath = Join-Path($testPath)$($_)
+            }
+            Write-Verbose $testPath
+            If(!(test-path $testPath)){
+                $createfolder = New-Item $testPath -ItemType directory
+            }
+        }     
+    }
+    return [string]$Path
+}
 
 <#
 .SYNOPSIS
@@ -320,36 +351,8 @@ end{
 }
 }
 
-<#
-.DESCRIPTION 
-    Creates each level of a path. Requires elevated permissions to create a path. Currently, does not check if
-    adequate permissions exist to create a path.
-.EXAMPLE 1
-    Build-Path -Path "c:\temp\ouptut\Time0930"
-    Each portion of the path is checked, if it does not exist it is created.
+function Limit-Job {}
 
-#>
-
-function Add-Path{
-    param([string]$Path)
-    [string]$testPath = ""
-    if(!(test-path $Path) ){
-        
-        $Path.Split("\") | foreach{
-            if($_ -like "*:" ){
-                $testPath = $_
-            }
-            if($_ -notlike "*:" ){
-                $testPath = Join-Path($testPath)$($_)
-            }
-            Write-Verbose $testPath
-            If(!(test-path $testPath)){
-                $createfolder = New-Item $testPath -ItemType directory
-            }
-        }     
-    }
-    return [string]$Path
-}
         
 New-Alias -Name Format-NumberedList -Value Format-OrderedList -Description "Allias for Format-OrderedList."
 New-Alias -Name Build-Path -Value Add-Path -Description "Alias for Add-Path, to prevent a breaking change. "

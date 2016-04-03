@@ -2,24 +2,16 @@
 $srcModule = $MyInvocation.MyCommand.Path `
     -replace '\.Tests\.', '.' -replace "ps1", "psd1"
     $srcModule
-Test-ModuleManifest $srcModule
+$testPathLocation = $MyInvocation.MyCommand.Path # this is used by Add-Path tests
 Import-Module $srcModule 
 
 InModuleScope "Powershell.Helper.Extension" {
     Import-Module $srcModule 
 
-
     Describe "Add-Path" {
         Context "Test1" {
-            $pattern = "([\w\:]+)[\\]"
-            $match = $MyInvocation.MyCommand.Path -match $pattern            
-            $path = $Matches[0] + $(New-Guid).ToString() + "\" + $(New-Guid).ToString()
-            It "does something useful" {
-                $true | Should Be $true
-            }
-            It "with a path it should return the path" {
-                Add-Path $path | Should Be $path
-            }
+            #use $env:ALLUSERSPROFILE which usually points to c:\programdata            
+            $path = Join-Path(Join-Path($env:ALLUSERSPROFILE)$(New-Guid).ToString())$(New-Guid).ToString()
             It "After using Add-Path the path is confirmed with test-path" {
                 $newpath = Add-Path $path;
                 Test-Path $newpath  | Should Be $true
@@ -40,8 +32,6 @@ InModuleScope "Powershell.Helper.Extension" {
                 rd $path
                 }
             }
-            
-
         }
     }
     Describe "Format-OrderedList" {
@@ -49,7 +39,15 @@ InModuleScope "Powershell.Helper.Extension" {
             $true | Should Be $true
         }
     }
-
+    Describe "Limit-Job" {
+        
+        It "the method exists when calling Get-Command" {
+            !(Get-Command "Limit-Job" -errorAction SilentlyContinue) | Should Be $false
+        }
+        It "Exists in the Module Manifext" {
+            (Test-ModuleManifest $srcModule | where{$_.ExportedCommands.Keys -Like "Limit-Job"} ).Count | Should Be 1
+        }
+    }
 
 }
 Remove-Module "Powershell.Helper.Extension"

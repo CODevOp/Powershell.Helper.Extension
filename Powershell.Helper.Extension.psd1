@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4'
+ModuleVersion = '1.5'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -73,7 +73,7 @@ FormatsToProcess = @()
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = 'Format-OrderedList', 'Add-Path'
+FunctionsToExport = 'Format-OrderedList', 'Add-Path', 'Limit-Job'
 
 # Cmdlets to export from this module
 CmdletsToExport = @()
