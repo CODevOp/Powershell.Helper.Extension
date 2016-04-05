@@ -22,14 +22,22 @@ InModuleScope "Powershell.Helper.Extension" {
             It "Build-Path is an alias." {
                 get-alias -Name Build-Path | Should Be $true
             }
-            BeforeEach {
+            BeforeEach {                
                 if(Test-Path $path){
-                rd $path
+                    $parentPath = (get-item $path).Parent.FullName                 
+                    if(Test-Path $parentPath){
+                        "it exists"
+                        rd $parentPath -Force
+                    }            
                 }
             }
-            AfterEach {
+            AfterEach {                
                 if(Test-Path $path){
-                rd $path
+                    $parentPath = (get-item $path).Parent.FullName                 
+                    if(Test-Path $parentPath){
+                        "it exists"
+                        rd $parentPath -Force
+                    }            
                 }
             }
         }
@@ -41,10 +49,10 @@ InModuleScope "Powershell.Helper.Extension" {
     }
     Describe "Limit-Job" {
         
-        It "the method exists when calling Get-Command" {
+        It "The method exists when calling Get-Command" {
             !(Get-Command "Limit-Job" -errorAction SilentlyContinue) | Should Be $false
         }
-        It "Exists in the Module Manifext" {
+        It "The method exists in the Module Manifest" {
             (Test-ModuleManifest $srcModule | where{$_.ExportedCommands.Keys -Like "Limit-Job"} ).Count | Should Be 1
         }
     }
