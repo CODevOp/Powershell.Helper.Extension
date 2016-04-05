@@ -351,7 +351,24 @@ end{
 }
 }
 
-function Limit-Job {}
+function Limit-Job {
+<#
+.SYNOPSIS
+    The Powershell Start-Job allowes the execution of many processes in parallel as a background job. 
+    It would be nice to kick off a process that can control how many jobs run at one time. 
+
+.DESCRIPTION 
+    Limit-Job will run Start-Job once foreach item and but will limit how many jobs run simultaneously. 
+
+.EXAMPLE
+
+.EXAMPLE
+
+#>
+param([Object[]]$StartJob) #, [int]$Limit, [string]$Name
+    
+
+}
 
         
 New-Alias -Name Format-NumberedList -Value Format-OrderedList -Description "Allias for Format-OrderedList."

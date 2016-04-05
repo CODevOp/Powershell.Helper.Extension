@@ -55,6 +55,12 @@ InModuleScope "Powershell.Helper.Extension" {
         It "The method exists in the Module Manifest" {
             (Test-ModuleManifest $srcModule | where{$_.ExportedCommands.Keys -Like "Limit-Job"} ).Count | Should Be 1
         }
+        It "Starts a job to manage running jobs" {
+            $StartJob = @("{}" )
+            $job = Limit-Job $StartJob
+            $job | select -Property PSJobType | Should Be "BackgroundJob"
+        
+        }
     }
 
 }
