@@ -58,9 +58,16 @@ InModuleScope "Powershell.Helper.Extension" {
         It "Starts a job to manage running jobs" {
             $StartJob = @("{}" )
             $job = Limit-Job $StartJob
-            $job | select -Property PSJobType | Should Be "BackgroundJob"
+            ($job | select -First 1 -Property PSJobTypeName).PSJobTypeName | Should Be "BackgroundJob"
         
         }
+#        It "Can start multiple jobs" {
+#            $JobsCountBefore = get-job
+#            $StartJob = @({sleep -Milliseconds 10},{sleep -Milliseconds 10},{sleep -Milliseconds 10}  )
+#            $job = Limit-Job -StartJob $StartJob
+#            $JobsCountAfter = get-job
+#            $JobsCountAfter.Count - $JobsCountBefore.Count -ge 4| Should Be $true
+#        }
     }
 
 }
