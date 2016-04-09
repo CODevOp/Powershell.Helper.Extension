@@ -1,13 +1,9 @@
 ﻿#Reference: https://www.simple-talk.com/sysadmin/powershell/practical-powershell-unit-testing-getting-started/
 $srcModule = $MyInvocation.MyCommand.Path `
     -replace '\.Tests\.', '.' -replace "ps1", "psd1"
-    $srcModule
-$testPathLocation = $MyInvocation.MyCommand.Path # this is used by Add-Path tests
 Import-Module $srcModule 
 
 InModuleScope "Powershell.Helper.Extension" {
-    Import-Module $srcModule 
-
     Describe "Add-Path" {
         Context "Test1" {
             #use $env:ALLUSERSPROFILE which usually points to c:\programdata            
@@ -51,23 +47,22 @@ InModuleScope "Powershell.Helper.Extension" {
         
         It "The method exists when calling Get-Command" {
             !(Get-Command "Limit-Job" -errorAction SilentlyContinue) | Should Be $false
-        }
-        It "The method exists in the Module Manifest" {
-            (Test-ModuleManifest $srcModule | where{$_.ExportedCommands.Keys -Like "Limit-Job"} ).Count | Should Be 1
-        }
+        }        
         It "Starts a job to manage running jobs" {
             $StartJob = @("{}" )
             $job = Limit-Job $StartJob
             ($job | select -First 1 -Property PSJobTypeName).PSJobTypeName | Should Be "BackgroundJob"
         
         }
-#        It "Can start multiple jobs" {
-#            $JobsCountBefore = get-job
-#            $StartJob = @({sleep -Milliseconds 10},{sleep -Milliseconds 10},{sleep -Milliseconds 10}  )
-#            $job = Limit-Job -StartJob $StartJob
-#            $JobsCountAfter = get-job
-#            $JobsCountAfter.Count - $JobsCountBefore.Count -ge 4| Should Be $true
-#        }
+        It "Can start multiple jobs" {
+            $JobsCountBefore = get-job | Receive-Job -Keep
+            $StartJob = @({start-job -ScriptBlock { sleep -Milliseconds 10 }},{start-job -ScriptBlock { sleep -Milliseconds 20 }},{start-job -ScriptBlock { sleep -Milliseconds 30 }}  )
+            
+            $job = Limit-Job -StartJob $StartJob
+            sleep -Milliseconds 1000
+            $JobsCountAfter = get-job $job.Id | Receive-Job -Keep
+            $JobsCountAfter.Count | Should Be $StartJob.Count
+        }
     }
 
 }

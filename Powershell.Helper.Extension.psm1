@@ -354,7 +354,7 @@ end{
 function Limit-Job {
     <#
     .SYNOPSIS
-        The Powershell Start-Job allowes the execution of many processes in parallel as a background job. 
+        The Powershell Start-Job allows the execution of many processes in parallel as a background job. 
         It would be nice to kick off a process that can control how many jobs run at one time. 
 
     .DESCRIPTION 
@@ -365,24 +365,25 @@ function Limit-Job {
     .EXAMPLE
 
     #>
-    param([Object[]]$StartJob) #, [int]$Limit, [string]$Name
-    $StartJob | foreach{Write-Verbose "From Limit-Job $( $_)"}
-    $scriptBlock = {
-        Write-host $args.Count
-        $args |foreach{Write-Host "From running job ARGS $( $_ )"} 
-        
+    param([string[]]$StartJob) #, [int]$Limit, [string]$Name
+    
+    $scriptBlock = {            
+            $ListOfJobs = @()
             $args | foreach { 
-                    $script = $_.ToString()
+                    #Write-Host "Starting Job $($_.tostring()) at $(get-date)"
+                    $scriptblock = $executioncontext.invokecommand.NewScriptBlock($_)
                 try{
-                    invoke-command -ScriptBlock {$script}
+                    $jobStart = $null
+                    $jobStart = Start-job -ScriptBlock $scriptblock
+                    $ListOfJobs = $ListOfJobs + $jobStart #Add the Jobs to an array
+                
                 }
                 catch{
-                    write-verbose "could not start $($_.tostring())"
-                    write-host "could not start $($_.tostring())"
-                }
-            
+                    write-verbose "could not start $($scriptblock.tostring())"
+                    write-host "could not start $($scriptblock.tostring())"
+                }            
            }
-
+           return $ListOfJobs
     }
     $Name = New-Guid
     $manageJobs = Start-Job -Name $Name -ScriptBlock $scriptBlock -ArgumentList @($StartJob )
