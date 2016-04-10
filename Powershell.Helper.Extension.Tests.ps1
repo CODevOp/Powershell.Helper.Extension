@@ -47,21 +47,48 @@ InModuleScope "Powershell.Helper.Extension" {
         
         It "The method exists when calling Get-Command" {
             !(Get-Command "Limit-Job" -errorAction SilentlyContinue) | Should Be $false
-        }        
-        It "Starts a job to manage running jobs" {
-            $StartJob = @("{}" )
-            $job = Limit-Job $StartJob
-            ($job | select -First 1 -Property PSJobTypeName).PSJobTypeName | Should Be "BackgroundJob"
-        
-        }
-        It "Can start multiple jobs" {
-            $JobsCountBefore = get-job | Receive-Job -Keep
+        }  
+        It "Can start multiple Jobs" {
+            #Create a list of jobs to start 
             $StartJob = @({start-job -ScriptBlock { sleep -Milliseconds 10 }},{start-job -ScriptBlock { sleep -Milliseconds 20 }},{start-job -ScriptBlock { sleep -Milliseconds 30 }}  )
-            
             $job = Limit-Job -StartJob $StartJob
-            sleep -Milliseconds 1000
-            $JobsCountAfter = get-job $job.Id | Receive-Job -Keep
+            $JobsCountAfter = get-job  
             $JobsCountAfter.Count | Should Be $StartJob.Count
+        }              
+        It "Can start multiple commands as Jobs" {
+            #Create a list of jobs to start 
+            $StartJob = @({ sleep -Milliseconds 10 },{ sleep -Milliseconds 20 },{ sleep -Milliseconds 30 })
+            $job = Limit-Job -StartJob $StartJob
+            $JobsCountAfter = get-job  
+            $JobsCountAfter.Count | Should Be $StartJob.Count
+        }
+        It "Can limit how many jobs running to 1 " {
+            $StartJob = @({start-job -ScriptBlock { sleep -Milliseconds 101 }},{start-job -ScriptBlock { sleep -Milliseconds 1002 }},{start-job -ScriptBlock { sleep -Milliseconds 1003 }}  )
+            $Limit = 1
+            $job = Limit-Job -StartJob $StartJob -Limit $Limit
+            $JobsCountAfter = get-job -State Running 
+            $JobsCountAfter.Count | Should Be $Limit
+
+        }
+        It "Can limit how many jobs running to 2 " {
+            $StartJob = @({start-job -ScriptBlock { sleep -Milliseconds 0101 }},{start-job -ScriptBlock { sleep -Milliseconds 5002 }},{start-job -ScriptBlock { sleep -Milliseconds 5003 }}  )
+            $Limit = 2
+            Limit-Job -StartJob $StartJob -Limit $Limit
+            
+            $(get-job -State Running).Count | Should Be $Limit
+
+        }
+
+        BeforeEach{
+            #remove any jobs in this session
+            get-job | Stop-Job 
+            get-job | remove-job
+        }
+        AfterEach{
+            #remove any jobs in this session
+            get-job | Stop-Job 
+            get-job | remove-job
+
         }
     }
 

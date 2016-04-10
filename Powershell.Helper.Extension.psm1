@@ -365,31 +365,29 @@ function Limit-Job {
     .EXAMPLE
 
     #>
-    param([string[]]$StartJob) #, [int]$Limit, [string]$Name
-    
-    $scriptBlock = {            
-            $ListOfJobs = @()
-            $args | foreach { 
-                    #Write-Host "Starting Job $($_.tostring()) at $(get-date)"
-                    $scriptblock = $executioncontext.invokecommand.NewScriptBlock($_)
-                try{
-                    $jobStart = $null
-                    $jobStart = Start-job -ScriptBlock $scriptblock
-                    $ListOfJobs = $ListOfJobs + $jobStart #Add the Jobs to an array
-                
-                }
-                catch{
-                    write-verbose "could not start $($scriptblock.tostring())"
-                    write-host "could not start $($scriptblock.tostring())"
-                }            
-           }
-           return $ListOfJobs
-    }
-    $Name = New-Guid
-    $manageJobs = Start-Job -Name $Name -ScriptBlock $scriptBlock -ArgumentList @($StartJob )
-    return $manageJobs
-}
+    param([string[]]$StartJob,[int]$Limit=0) #, [int]$Limit, [string]$Name
+    $VerbosePreference = "Continue"
+#    $ErrorActionPreference = "Continue"
+#    $WarningPreference = "Continue"
+    Write-Verbose "The Limit is: $Limit"
 
+    $StartJob | foreach {             
+        try{
+            $ScriptBlock = $executioncontext.invokecommand.NewScriptBlock( $_.Trim() ) #Found information about converting a string to a script block http://www.get-powershell.com/post/2008/12/15/ConvertTo-ScriptBlock.aspx
+            while($(get-job | where {$_.State -eq "Running"}).Count -eq $Limit -and $Limit -ne 0 ){
+                sleep -Milliseconds 1
+           }    
+            Write-Verbose "Starting Job $($ScriptBlock) at $(get-date)"
+
+            Start-Job -ScriptBlock $ScriptBlock 
+            sleep -Milliseconds 5 # wait for the job to start
+        }
+        catch{
+            Write-Error "could not start $($scriptblock.tostring())"
+        }            
+    }
+    Write-Verbose "Number of Jobs Running $($(get-job -State Running).Count)"
+ }
         
 New-Alias -Name Format-NumberedList -Value Format-OrderedList -Description "Allias for Format-OrderedList."
 New-Alias -Name Build-Path -Value Add-Path -Description "Alias for Add-Path, to prevent a breaking change. "
