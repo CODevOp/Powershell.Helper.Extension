@@ -1,5 +1,5 @@
 ﻿<#
-.VERSION 1.0
+.VERSION 1.6
 
 .GUID 4ea20bcd-b174-46bc-ba48-08d10066ec5d
 
@@ -354,21 +354,107 @@ end{
 function Limit-Job {
     <#
     .SYNOPSIS
-        The Powershell Start-Job allows the execution of many processes in parallel as a background job. 
+        The Powershell script Start-Job allows the execution of many processes in parallel as background jobs. 
         It would be nice to kick off a process that can control how many jobs run at one time. 
 
     .DESCRIPTION 
         Limit-Job will run Start-Job once foreach item and but will limit how many jobs run simultaneously. 
 
     .EXAMPLE
+    The following starts 3 jobs one a at a time.
+            $StartJob = @({start-job -ScriptBlock { sleep -Milliseconds 0500 }},{start-job -ScriptBlock { sleep -Milliseconds 5002 }},{start-job -ScriptBlock { sleep -Milliseconds 5003 }}  )
+            $Limit = 1
+            $job = Limit-Job -StartJob $StartJob -Limit $Limit
+            $job | ft
+            "Number of running jobs: $($(get-job -State Running).Count)"
+
+            Output:
+
+            Id     Name            PSJobTypeName   State         HasMoreData     Location             Command                  
+            --     ----            -------------   -----         -----------     --------             -------                  
+            49     Job49           BackgroundJob   Completed     True            localhost            start-job -ScriptBlock...
+            51     Job51           BackgroundJob   Completed     True            localhost            start-job -ScriptBlock...
+            53     Job53           BackgroundJob   Running       True            localhost            start-job -ScriptBlock...
+
+
+
 
     .EXAMPLE
+            get-job | remove-job # remove any existing jobs
+            # Build  a list of jobs/comands to run
+            $StartJob = @({start-job -ScriptBlock { get-service | select -First 10 }},{start-job -ScriptBlock { Get-ChildItem c:\  | select -First 10 }},{start-job -ScriptBlock { get-process | select -First 10 }}  )
+            $Limit = 1
+            $job = Limit-Job -StartJob $StartJob -Limit $Limit #start the jobs 1 at a time
+            get-job | Wait-Job # wait for the jobs to stop running
+            get-job | ft # get a list of the jobs
+
+            # loop through the list of jobs, print the command and receive the job data
+            get-job | foreach {
+                write-host $_.Command
+                $_ | Receive-Job | ft
+           }
+            
+            Id     Name            PSJobTypeName   State         HasMoreData     Location             Command                  
+            --     ----            -------------   -----         -----------     --------             -------                  
+            141    Job141          BackgroundJob   Completed     True            localhost             get-service | select ...
+            143    Job143          BackgroundJob   Completed     True            localhost             Get-ChildItem c:\  | ...
+            145    Job145          BackgroundJob   Completed     True            localhost             get-process | select ...
+
+
+             get-service | select -First 10 
+
+            Status   Name               DisplayName                           
+            ------   ----               -----------                           
+            Stopped  AJRouter           AllJoyn Router Service                
+            Stopped  ALG                Application Layer Gateway Service     
+            Running  AppHostSvc         Application Host Helper Service       
+            Stopped  AppIDSvc           Application Identity                  
+            Running  Appinfo            Application Information               
+            Running  AppMgmt            Application Management                
+            Stopped  AppReadiness       App Readiness                         
+            Stopped  AppXSvc            AppX Deployment Service (AppXSVC)     
+            Stopped  aspnet_state       ASP.NET State Service                 
+            Running  Asset Managemen... Asset Management Daemon               
+
+
+             Get-ChildItem c:\  | select -First 10 
+
+
+                Directory: C:\
+
+
+            Mode                LastWriteTime         Length Name                                                                    
+            ----                -------------         ------ ----                                                                    
+            d-----       12/15/2015     10:47                5938dfc30ab6bda1c4a2                                                    
+            d-----        1/30/2016     16:10                chef-repo                                                               
+            d-----        8/26/2015     12:05                DRIVERS                                                                 
+            da----        9/20/2015     08:59                Go                                                                      
+            d-----        2/13/2016     09:15                Hyper-V                                                                 
+            d-----        2/10/2016     13:33                inetpub                                                                 
+            d-----        12/9/2015     07:35                Intel                                                                   
+            d-----        2/13/2016     08:57                iso                                                                     
+            d-----        8/14/2015     15:07                mfg                                                                     
+            d-----        1/22/2016     16:27                opscode                                                                 
+
+
+             get-process | select -First 10 
+
+            Handles  NPM(K)    PM(K)      WS(K) VM(M)   CPU(s)     Id  SI ProcessName                                                
+            -------  ------    -----      ----- -----   ------     --  -- -----------                                                
+                323      20     8044      26020 ...01     1.78   8528   1 ApplicationFrameHost                                       
+                157      11     2664       8104    86     1.41  10744   1 AppVShNotify                                               
+                169      13     2948      12492   115     1.63  10528   1 BleServicesCtrl                                            
+               1323      12     2860       7960    69     2.67   2956   0 CamMute                                                    
+               2117     100    49108      41568   349 2,066.53   2724   0 ccSvcHst                                                   
+                433      33     6020       7008   121    26.38   7492   1 ccSvcHst                                                   
+                231      21    31928      35016   210    11.84   1760   1 chrome                                                     
+                265      10     1952       6592    77     0.09  14712   1 chrome                                                     
+                267      26    60216      73412   265   415.14  16100   1 chrome                                                     
+                411      27    66400     124972   320    59.33  19904   1 chrome                                                     
+
 
     #>
     param([string[]]$StartJob,[int]$Limit=0) #, [int]$Limit, [string]$Name
-    $VerbosePreference = "Continue"
-#    $ErrorActionPreference = "Continue"
-#    $WarningPreference = "Continue"
     Write-Verbose "The Limit is: $Limit"
 
     $StartJob | foreach {             
@@ -378,8 +464,14 @@ function Limit-Job {
                 sleep -Milliseconds 1
            }    
             Write-Verbose "Starting Job $($ScriptBlock) at $(get-date)"
-
-            Start-Job -ScriptBlock $ScriptBlock 
+            # if we use start-job for script blocks that have proper job formatted commands, the user cannot use receive-job        
+            if($_ -like "*start-job*"){
+                Invoke-Command -ScriptBlock $ScriptBlock # start job as invoke-command
+            }
+            else{
+                Start-Job -ScriptBlock $ScriptBlock # the script block is a powershell command not a job.
+            }
+            
             sleep -Milliseconds 5 # wait for the job to start
         }
         catch{

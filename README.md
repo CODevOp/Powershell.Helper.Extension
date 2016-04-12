@@ -9,3 +9,5 @@ and to increase proficiency in Git repositories and continue to build powershell
 4/1/2016: v1.3 - The first Pester Unit tests were added, a blog entry from simple-talk.com. Here is the URL https://www.simple-talk.com/sysadmin/powershell/practical-powershell-unit-testing-getting-started/
 
 4/2/2016: v1.4 - Changed the function Build-Path to Add-Path to prevent unapproved verb warning. Pester was updated to test for both Add-Path and Build-Path alias. Updated Tags, LicenseURI and ProjectURI.
+
+4/12/2016: v1.5 - Added the function Limit-Job allowing scripters to create multiple jobs or commands and control how many run at once.

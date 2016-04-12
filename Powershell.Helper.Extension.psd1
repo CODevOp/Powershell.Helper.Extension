@@ -99,7 +99,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'Helper','utility','Format-NumberedList','Format', 'Path', 'Add-Path'
+        Tags = 'Helper','utility','Format-NumberedList','Format', 'Path', 'Add-Path', 'Limit-Job'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/CODevOp/Powershell.Helper.Extension/blob/master/LICENSE'
@@ -111,7 +111,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Changed the function Build-Path to Add-Path to prevent unapproved verb warning. Pester was updated to test for both Add-Path and Build-Path alias. Updated Tags, LicenseURI and ProjectURI. '
+        ReleaseNotes = 'Added the function Limit-Job allowing scripters to create multiple jobs or commands and control how many run at once.'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
