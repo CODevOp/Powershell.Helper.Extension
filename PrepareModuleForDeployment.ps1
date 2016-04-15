@@ -10,4 +10,4 @@ $path = (join-path(Split-Path -parent $PSCommandPath)"$name.psd1")
 
 
 
-#Publish-Module -Name Split-Path -parent $PSCommandPath -NuGetApiKey $apiKey
+Publish-Module -Name $path -NuGetApiKey $apiKey
