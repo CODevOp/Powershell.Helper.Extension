@@ -70,6 +70,12 @@ InModuleScope "Powershell.Helper.Extension" {
                 $getService | select -First 1 | Should Match $pattern
 
             }
+            It "The returned object is formatted correctly multiple properties" {
+                $getService = Get-Service | Format-OrderedList -property Name,DisplayName
+                $pattern = "[0-9]{1,} :[\t]{1}[\w\d ]{1,}[\t]{1}[\w\d ]{1,}[\t]{1}"
+                $getService | select -First 1 | Should Match $pattern
+
+            }
             It "The returned object is formatted correctly when property is not provided " {
                 $getService = Get-Service | Format-OrderedList
                 $pattern = "[0-9]{1,} :[\t]{1}[\w\d ]{1,}[\t]{1}"

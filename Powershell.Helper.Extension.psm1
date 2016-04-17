@@ -332,13 +332,28 @@ process{
 
     }
     if(!$arrayOfProperties){    
-        $arrayOfProperties = $($catch |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
+        #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
+        $propertyList = $($_ |Get-Member -MemberType Property)
+        if($propertyList){
+            $arrayOfProperties = $($propertyList | Select -First 1 -property Name).Name
+        }
+
     }
     if(!$arrayOfProperties){    
-        $arrayOfProperties = $($catch |Get-Member -MemberType Property | select -First 1 -Property Name).Name
+        #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
+        $propertyList = $($_ |Get-Member -MemberType NoteProperty)
+        if($propertyList){
+            $arrayOfProperties = $($propertyList | Select -First 1 -property Name).Name
+        }
+
     }
-    if(!$arrayOfProperties){    
-        $arrayOfProperties = $($catch |Get-Member -MemberType AliasProperty | select -First 1 -Property Name).Name
+        if(!$arrayOfProperties){    
+        #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
+        $propertyList = $($_ |Get-Member -MemberType AliasProperty)
+        if($propertyList){
+            $arrayOfProperties = $($propertyList | Select -First 1 -property Name).Name
+        }
+
     }
 
     $item = $_ | select -Property $arrayOfProperties;
