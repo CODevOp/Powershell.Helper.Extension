@@ -39,8 +39,42 @@ InModuleScope "Powershell.Helper.Extension" {
         }
     }
     Describe "Format-OrderedList" {
-        It "does something useful" {
-            $true | Should Be $true
+        Mock Read-Host { }
+        Context "Mock Out-Host confirm it is called" {
+            Mock Get-Service { $count = 0; while($count -lt 5 ){"" | select -property @{Expression={"Stopped"}; Label="Status"},@{Expression={"ServiceName$count"}; Label="Name"},@{Expression={"Service Diplay Name $count"}; Label="DisplayName"};                   $count++;}}
+            Mock Out-Host {return 1;}
+            It "It calls Get-Service returns without selecting an item " {
+                Get-Service | Format-OrderedList #| Write-Verbose # | Should Be ""
+                Assert-MockCalled Out-Host -Times 1 
+            }
+        }
+        
+        Context "Mock out-host return object" {
+            Mock Get-Service { $count = 0; $returnObject = @(); while($count -lt 100 ){$item = "" | select -property @{Expression={"Stopped"}; Label="Status"},@{Expression={"ServiceName$count"}; Label="Name"},@{Expression={"Service Diplay Name $count"}; Label="DisplayName"}; $returnObject = $returnObject + $item; $count++;} return $returnObject;}
+            
+            Mock Out-Host { 
+            begin{$object=@(); }
+            process{
+                $object = $object + $InputObject
+            }
+            end{
+                return $object
+            }
+        }
+            It "The object returned has the correct count " {
+                $(Get-Service | Format-OrderedList).Count  | Should Be 100
+            }
+            It "The returned object is formatted correctly when property is provided " {
+                $getService = Get-Service | Format-OrderedList -property Name
+                $pattern = "[0-9]{1,} :[\t]{1}[\w\d ]{1,}[\t]{1}"
+                $getService | select -First 1 | Should Match $pattern
+
+            }
+            It "The returned object is formatted correctly when property is not provided " {
+                $getService = Get-Service | Format-OrderedList
+                $pattern = "[0-9]{1,} :[\t]{1}[\w\d ]{1,}[\t]{1}"
+                $getService | select -First 1 | Should Match $pattern
+            }
         }
     }
     Describe "Limit-Job" {
