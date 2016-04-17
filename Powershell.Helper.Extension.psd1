@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.5'
+ModuleVersion = '1.6'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -111,7 +111,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Added the function Limit-Job allowing scripters to create multiple jobs or commands and control how many run at once.'
+        ReleaseNotes = 'Added pester test for format-OrderedList. Fix bug where Format-OrderList would be empty if a propery was not specified. '
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
