@@ -54,17 +54,26 @@ function Format-Item{
 function Add-Path{
     param([string]$Path)
     [string]$testPath = ""
-    if(!(test-path $Path) ){
-        
-        $Path.Split("\") | foreach{
-            if($_ -like "*:" ){
-                $testPath = $_
+    if(!(test-path $Path) ){        
+        $pathArray = $Path.Split("\");
+        for($forCounter = 0;$forCounter -lt $pathArray.length;$forCounter++){
+            $pathItem = $pathArray[$forCounter];
+            Write-Verbose $pathItem
+            if($pathItem -eq ""){
+                
+                $forCounter = 2; #reset the counter
+                $testPath = "\\$($pathArray[$forCounter];)";
+                $forCounter = 3;
+                $pathItem = $pathArray[$forCounter];                
             }
-            if($_ -notlike "*:" ){
-                $testPath = Join-Path($testPath)$($_)
+            if($pathItem -like "*:"  ){
+                $testPath = $pathItem
+            }
+            if($pathItem -notlike "*:" ){
+                $testPath = Join-Path($testPath)$($pathItem)
             }
             Write-Verbose $testPath
-            If(!(test-path $testPath)){
+            If(!(test-path -Path $testPath)){
                 $createfolder = New-Item $testPath -ItemType directory
             }
         }     
