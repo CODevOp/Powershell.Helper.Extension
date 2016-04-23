@@ -13,3 +13,5 @@ and to increase proficiency in Git repositories and continue to build powershell
 4/12/2016: v1.5 - Added the function Limit-Job allowing scripters to create multiple jobs or commands and control how many run at once.
 
 4/17/2016: v1.6 - Added pester test for format-OrderedList. Fix bug where Format-OrderList would be empty if a propery was not specified. 
+
+4/23/2016: v1.7 - Added functionality to handle UNC type path. Added Test to test UNC path.

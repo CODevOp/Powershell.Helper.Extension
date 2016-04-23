@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.6'
+ModuleVersion = '1.7'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -111,7 +111,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Added pester test for format-OrderedList. Fix bug where Format-OrderList would be empty if a propery was not specified. '
+        ReleaseNotes = 'Tried to add mocks for Add-Path (failed). Added functionality to handle UNC type path. Added Test to test UNC path.'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
