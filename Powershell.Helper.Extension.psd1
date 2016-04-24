@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.7'
+ModuleVersion = '1.8'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -111,7 +111,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Tried to add mocks for Add-Path (failed). Added functionality to handle UNC type path. Added Test to test UNC path.'
+        ReleaseNotes = 'Add pester tests for get-help examples. Moved the function documentation into the module functions. Fixed issue with Add-path not displaying examples. '
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

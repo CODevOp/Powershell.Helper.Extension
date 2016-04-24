@@ -15,3 +15,5 @@ and to increase proficiency in Git repositories and continue to build powershell
 4/17/2016: v1.6 - Added pester test for format-OrderedList. Fix bug where Format-OrderList would be empty if a propery was not specified. 
 
 4/23/2016: v1.7 - Added functionality to handle UNC type path. Added Test to test UNC path.
+
+4/24/2016: v1.8 - Add pester tests for get-help examples. Moved the function documentation into the module functions. Fixed issue with Add-path not displaying examples. 
