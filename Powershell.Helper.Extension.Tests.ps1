@@ -102,6 +102,12 @@ InModuleScope "Powershell.Helper.Extension" {
                 $pattern = "[0-9]{1,} :[\t]{1}[\w\d ]{1,}[\t]{1}"
                 $getService | select -First 1 | Should Match $pattern
             }
+            It "The returned array of items is formated with the Array Items" {
+                $testArray = @("Item1","Item2","Item3","Item4","Item5","Item6","Item7","Item8","Item9")
+                $pattern = "[0-9]{1,} :[\t]{1}Item[1-9]{1}"
+                $testArray | Format-OrderedList| select -First 1 | Should Match $pattern
+            }
+
         }
         Context "Test Get-Help"{
             It "Can get-help and see examples" {
