@@ -17,3 +17,5 @@ and to increase proficiency in Git repositories and continue to build powershell
 4/23/2016: v1.7 - Added functionality to handle UNC type path. Added Test to test UNC path.
 
 4/24/2016: v1.8 - Add pester tests for get-help examples. Moved the function documentation into the module functions. Fixed issue with Add-path not displaying examples. 
+
+4/29/2016: v1.9 - Fixed issue with Format-OrderedList where array of items would come back with the array length as the item names. 

@@ -31,17 +31,20 @@ function Format-Item{
     param($item = @{},
         [array]$property
     )
+    if($property){
+        $property | foreach{
 
-    $property | foreach{
-
-        $column = $_
-        "$($item."$column")`t "
+            $column = $_
+            "$($item."$column")`t "
+        }
     }
-    
+    else{
+        "$($item)`t "
+    }
+
 
 }
 ############### Place external functions here alphabetically
-
 
 function Add-Path{
     <#
@@ -345,14 +348,7 @@ process{
         }
 
     }
-    if(!$arrayOfProperties){    
-        #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
-        $propertyList = $($_ |Get-Member -MemberType Property)
-        if($propertyList){
-            $arrayOfProperties = $($propertyList | Select -First 1 -property Name).Name
-        }
-
-    }
+    
     if(!$arrayOfProperties){    
         #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
         $propertyList = $($_ |Get-Member -MemberType NoteProperty)
@@ -361,17 +357,18 @@ process{
         }
 
     }
-        if(!$arrayOfProperties){    
+    if(!$arrayOfProperties){    
         #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
         $propertyList = $($_ |Get-Member -MemberType AliasProperty)
         if($propertyList){
             $arrayOfProperties = $($propertyList | Select -First 1 -property Name).Name
         }
 
-    }
-
+    }    
+    
     $item = $_ | select -Property $arrayOfProperties;
     $formattedTable = $formattedTable +  "$count :`t$(Format-Item -item $item -property $arrayOfProperties )"
+
     $objectHash.Add("$count", $_)
 }
 end{

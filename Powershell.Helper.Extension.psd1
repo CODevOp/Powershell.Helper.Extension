@@ -12,7 +12,7 @@
 RootModule = '.\Powershell.Helper.Extension.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.8'
+ModuleVersion = '1.9'
 
 # ID used to uniquely identify this module
 GUID = 'd419801b-dfdf-44b3-a452-796f4c954172'
@@ -34,6 +34,9 @@ This powershell module has been distributed on the powershell gallery at
 https://www.powershellgallery.com/packages/Powershell.Helper.Extension. 
 The purpose for adding this to GitHub is to collaborate with other developers 
 and to increase proficiency in Git repositories and continue to build powershell skills.
+
+Please report issues to the github repository at https://github.com/CODevOp/Powershell.Helper.Extension
+
 '
 
 # Minimum version of the Windows PowerShell engine required by this module
@@ -111,7 +114,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Add pester tests for get-help examples. Moved the function documentation into the module functions. Fixed issue with Add-path not displaying examples. '
+        ReleaseNotes = 'Fixed issue with Format-OrderedList where array of items would come back with the array length as the item names. '
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''
