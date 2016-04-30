@@ -348,14 +348,7 @@ process{
         }
 
     }
-    if(!$arrayOfProperties){    
-        #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
-        $propertyList = $($_ |Get-Member -MemberType Property | where{$_.Name -ne "Length"})
-        if($propertyList){
-            $arrayOfProperties = $($propertyList | Select -First 1 -property Name).Name
-        }
-
-    }
+    
     if(!$arrayOfProperties){    
         #$arrayOfProperties = $($_ |Get-Member -MemberType NoteProperty | select -First 1 -Property Name).Name
         $propertyList = $($_ |Get-Member -MemberType NoteProperty)
