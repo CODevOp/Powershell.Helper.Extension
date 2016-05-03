@@ -5,13 +5,26 @@ Import-Module $srcModule
 
 InModuleScope "Powershell.Helper.Extension" {
     Describe "Add-Path" {
+        $path = Join-Path(Join-Path($env:temp)$(New-Guid).ToString())$(New-Guid).ToString()
+
+        Context "Path exists"{
+            Mock Test-Path{return $true;}
+            Mock Write-Verbose
+            $returnedPath = Add-Path -path $path
+            It "Returns the path "{
+                $returnedPath | Should Be $path                
+            }
+            It "Never calls Write-Verbose"{
+                Assert-MockCalled Write-Verbose 0
+                
+            }
+        }
         Context "Test1" {
             #Mock Test-Path{if($Path -eq ""){Write-Error "Test-Path : Cannot bind argument to parameter 'Path' because it is an empty string."; } else{return $true;}}
             #Mock New-Item {return $Path; }
             #Mock Get-Item {return $Path;}
 
             #use $env:ALLUSERSPROFILE which usually points to c:\programdata            
-            $path = Join-Path(Join-Path($env:ALLUSERSPROFILE)$(New-Guid).ToString())$(New-Guid).ToString()
             It "After using Add-Path the path is confirmed with test-path" {
                 $newpath = Add-Path $path;
                 Test-Path $newpath  | Should Be $true
