@@ -19,53 +19,91 @@ InModuleScope "Powershell.Helper.Extension" {
                 
             }
         }
-        Context "Test1" {
-            #Mock Test-Path{if($Path -eq ""){Write-Error "Test-Path : Cannot bind argument to parameter 'Path' because it is an empty string."; } else{return $true;}}
-            #Mock New-Item {return $Path; }
-            #Mock Get-Item {return $Path;}
-
-            #use $env:ALLUSERSPROFILE which usually points to c:\programdata            
-            It "After using Add-Path the path is confirmed with test-path" {
-                $newpath = Add-Path $path;
-                Test-Path $newpath  | Should Be $true
+        Context "Mock Test Standard Path"{
+           $startPath = $env:temp
+           $path1 = $(New-Guid).ToString()
+           $path2 = $(New-Guid).ToString()
+           $firstPath =$(Join-path($startPath)$path1)
+           $givenPath = Join-Path(Join-Path($startPath)$path1)$path2
+            
+            Mock Join-path{return "$path\$childPath"}
+            Mock New-Item {return $path} -ParameterFilter {$ItemType -eq "directory"}
+            Mock Test-Path{return $false} -ParameterFilter {$path -eq $firstPath}
+            Mock Test-Path{return $false} -ParameterFilter {$path -eq $givenPath}
+            Mock Test-Path{return $true}
+            Mock Write-Verbose
+            $returnedPath = Add-Path -path $givenPath
+            It "Returns the coorect path"{
+                
+                $returnedPath | Should Be $givenPath
             }
-
+            It "Write-Verbose was called 2 "{
+                Assert-MockCalled Write-Verbose 2
+                
+            }
+            It "Test-Path was called 3 "{
+                Assert-MockCalled Test-Path 3                
+            }
+            It "New-Item was called 2 "{
+                Assert-MockCalled New-Item 2                
+            }
+            It "Test-Path was called with ParameterFilter "{
+                Assert-MockCalled Test-Path -Exactly 2 -ParameterFilter {$path -eq $givenPath}                
+            }
+            
+            
+        }
+        Context "Module Tests"{
             It "Build-Path is not a command" {
                 !(Get-Command "Build-Path" -errorAction SilentlyContinue) | Should Be $false
             }
             It "Build-Path is an alias." {
                 get-alias -Name Build-Path | Should Be $true
             }
-            It "Build-Path works with a UNC path." {
-                $pattern = "([a-zA-Z:]{2,2})*"
-                $found =  $path -match $pattern
-                if($found){
-                 $replace = $Matches[0]
-                 $givenPath = $path -replace $replace, "\\$($env:COMPUTERNAME)\$($replace.Replace(":", "`$" ))"
-                                
-                $testPath = Add-Path $givenPath
-                $testPath | Should Be $givenPath                
-                }                
+            
+            
+        }
+        Context "Mock Test with UNC Path" {
+            $startPath = $env:temp
+            $pattern = "([a-zA-Z:]{2,2})*"
+            $found =  $startPath -match $pattern
+            if($found){
+                $replace = $Matches[0]
+                $startPath = $startPath -replace $replace, "\\$($env:COMPUTERNAME)\$($replace.Replace(":", "`$" ))"
             }
-            BeforeEach {
-                if(Test-Path $path){
-                    $parentPath = (get-item $path).Parent.FullName
-                    if(Test-Path $parentPath){
-                        "it exists"
-                        rd $parentPath -Force
-                    }
-                }
+
+
+            $path1 = $(New-Guid).ToString()
+            $path2 = $(New-Guid).ToString()
+            $firstPath =$(Join-path($startPath)$path1)
+            $givenPath = Join-Path(Join-Path($startPath)$path1)$path2
+
+            Mock Join-path{return "$path\$childPath"}
+            Mock New-Item {return $path} -ParameterFilter {$ItemType -eq "directory"}
+            Mock Test-Path{return $false} -ParameterFilter {$path -eq $firstPath}
+            Mock Test-Path{return $false} -ParameterFilter {$path -eq $givenPath}
+            Mock Test-Path{return $true}
+            Mock Write-Verbose
+            $returnedPath = Add-Path -path $givenPath
+            It "Returns the coorect path"{
+                
+                $returnedPath | Should Be $givenPath
             }
-            AfterEach {
-                if(Test-Path $path){
-                    $parentPath = (get-item $path).Parent.FullName
-                    if(Test-Path $parentPath){
-                        "it exists"
-                        rd $parentPath -Force
-                    }
-                }
+            It "Write-Verbose was called 2 "{
+                Assert-MockCalled Write-Verbose 2
+                
+            }
+            It "Test-Path was called 3 "{
+                Assert-MockCalled Test-Path 3                
+            }
+            It "New-Item was called 2 "{
+                Assert-MockCalled New-Item 2                
+            }
+            It "Test-Path was called with ParameterFilter "{
+                Assert-MockCalled Test-Path -Exactly 2 -ParameterFilter {$path -eq $givenPath}                
             }
         }
+
         Context "Test Get-Help"{
             It "Can get-help and see examples" {
                 $(get-help Add-Path ).examples.example.Count -gt 0 | Should Be $true
