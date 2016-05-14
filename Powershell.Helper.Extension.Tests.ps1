@@ -5,9 +5,16 @@ Import-Module $srcModule
 
 InModuleScope "Powershell.Helper.Extension" {
     Describe "Add-Path" {
-        $path = Join-Path(Join-Path($env:temp)$(New-Guid).ToString())$(New-Guid).ToString()
+        Context "Use Pester TestDrive"{
+            $path = Join-Path $(Join-Path "TestDrive:" -childPath $(New-Guid).ToString()) -ChildPath $(New-Guid).ToString()
+            $returnedPath = Add-Path -path $path
+            It "Returns the path "{
+                $returnedPath | Should Be $path                
+            }
+        }        
 
         Context "Path exists"{
+            $path = Join-Path(Join-Path($env:temp)$(New-Guid).ToString())$(New-Guid).ToString()
             Mock Test-Path{return $true;}
             Mock Write-Verbose
             $returnedPath = Add-Path -path $path
